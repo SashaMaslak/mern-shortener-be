@@ -11,7 +11,7 @@ import User from '../models/User.js'
 const { SECRET_KEY } = process.env
 //const { BASE_URL_FRONTEND } = getEnv()
 
-const register: ControllerFunction = async (req: Request, res: Response) => {
+const register: ControllerFunction = async (req, res) => {
   //отримуємо дані з фронтенда
   const { email, password } = req.body
 
@@ -40,7 +40,7 @@ const register: ControllerFunction = async (req: Request, res: Response) => {
   res.status(201).json({ message: 'User was created' })
 }
 
-const login: ControllerFunction = async (req: Request, res: Response) => {
+const login: ControllerFunction = async (req, res) => {
   //отримуємо дані з фронтенда
   const { email, password } = req.body
 
@@ -80,7 +80,16 @@ const login: ControllerFunction = async (req: Request, res: Response) => {
   res.json({ token, user })
 }
 
-export default {
+const logout: ControllerFunction = async (req, res) => {
+  const { _id } = req.body
+  await User.findByIdAndUpdate(_id, { token: '' })
+  res.status(204).json({ message: 'Logout success' })
+}
+
+const ctrl = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
+  logout: ctrlWrapper(logout),
 }
+
+export default ctrl
