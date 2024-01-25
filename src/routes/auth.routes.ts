@@ -1,14 +1,8 @@
 import { Router } from 'express'
 import User from '../models/User.js'
+import { HttpError } from '../helpers/HttpError.js'
 
 const router = Router()
 
 // /api/auth/register
-router.post('/register', async (req, res) => {
-  try {
-    //отримуємо дані з фронтенда
-    const { email, password } = req.body
-
-    const candidate = await User.findOne({ email })
-  } catch (error) {}
-})
+router.post('/register')
