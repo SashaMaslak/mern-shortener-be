@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import User from '../models/User.js'
+import { User } from '../models/User.js'
 import { HttpError } from '../helpers/HttpError.js'
 import { ControllerFunction } from '../types.js'
 import dtnv from 'dotenv'

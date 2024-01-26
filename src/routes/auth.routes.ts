@@ -1,14 +1,19 @@
 import { Router } from 'express'
 import ctrl from '../controllers/auth.controllers.js'
+import { joiValidateBody } from '../middlewares/validateBody.middleware.js'
+import { joiSchemas } from '../models/JoiSchema.js'
 import { isAuth } from '../middlewares/isAuth.middleware.js'
 
-const router = Router()
+export const authRouter = Router()
 
-// /api/auth/register
-router.post('/register', ctrl.register)
+// /users/register
+authRouter.post('/register', joiValidateBody(joiSchemas.registerSchema), ctrl.register)
 
-// /api/auth/login
-router.post('/login', ctrl.login)
+// /users/login
+authRouter.post('/login', joiValidateBody(joiSchemas.loginSchema), ctrl.login)
 
-// /api/auth/login
-router.post('/logout', isAuth, ctrl.logout)
+// /users/logot
+authRouter.post('/logout', isAuth, ctrl.logout)
+
+// /users/current
+authRouter.post('/current', isAuth, ctrl.getCurrent)

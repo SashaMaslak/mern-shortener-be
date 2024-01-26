@@ -1,4 +1,3 @@
-import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { nanoid } from 'nanoid'
@@ -6,7 +5,9 @@ import { ControllerFunction } from '../types.js'
 import { getEnv } from '../helpers/getEnv.js'
 import { ctrlWrapper } from '../helpers/ctrlWrapper.js'
 import { HttpError } from '../helpers/HttpError.js'
-import User from '../models/User.js'
+import { User } from '../models/User.js'
+import dtnv from 'dotenv'
+dtnv.config()
 
 const { SECRET_KEY } = process.env
 //const { BASE_URL_FRONTEND } = getEnv()
@@ -86,10 +87,15 @@ const logout: ControllerFunction = async (req, res) => {
   res.status(204).json({ message: 'Logout success' })
 }
 
+const getCurrent: ControllerFunction = async (req, res) => {
+  res.json({ token: req.body.user.token, user: req.body.user })
+}
+
 const ctrl = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
+  getCurrent: ctrlWrapper(getCurrent),
 }
 
 export default ctrl

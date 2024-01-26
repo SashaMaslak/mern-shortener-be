@@ -3,7 +3,7 @@ import { regex } from '../constants/regex.js'
 
 const { emailRegex, pswRegex } = regex
 
-const schema = new Schema(
+const userSchema = new Schema(
   {
     email: { type: String, match: emailRegex, required: true, unique: true },
     password: { type: String, match: pswRegex, required: true },
@@ -24,4 +24,4 @@ const schema = new Schema(
   { versionKey: false, timestamps: true },
 )
 
-export default model('User', schema)
+export const User = model('user', userSchema)

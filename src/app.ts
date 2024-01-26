@@ -1,9 +1,7 @@
-// npm i --save-dev @types/express
-// npm i --save-dev @types/morgan
-// npm i --save-dev @types/cors
 import express, { Request, Response, NextFunction } from 'express'
 import logger from 'morgan'
 import cors from 'cors'
+import { authRouter } from './routes/auth.routes.js'
 
 interface ServerError {
   status?: number
@@ -17,6 +15,8 @@ app.use(logger(formatLogger))
 app.use(cors())
 app.use(express.json())
 app.use(express.static('public'))
+
+app.use('/users', authRouter)
 
 app.all('*', (_, res: Response) => {
   res.status(404).json({ message: 'Not found' })
