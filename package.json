@@ -10,9 +10,9 @@
     }
   },
   "scripts": {
-    "dev": "npx nodemon",
+    "dev": "cross-env NODE_ENV=development npx nodemon",
     "build": "rimraf ./build && npx tsc",
-    "start": "npm run build && node build/main",
+    "start": "cross-env NODE_ENV=production npm run build && node build/main",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix"
   },
@@ -28,6 +28,7 @@
     "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "husky": "^8.0.3",
     "nodemon": "^3.0.3",
@@ -37,6 +38,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",

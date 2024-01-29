@@ -17,3 +17,9 @@ authRouter.post('/logout', isAuth, ctrl.logout)
 
 // /users/current
 authRouter.post('/current', isAuth, ctrl.getCurrent)
+
+// /users/verify:verificationToken
+authRouter.get('/verify/:verificationToken', ctrl.verifyEmail)
+
+// /users/verify
+authRouter.post('/verify', joiValidateBody(joiSchemas.emailSchema), ctrl.resendVerifyEmail)

@@ -1,16 +1,17 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { nanoid } from 'nanoid'
-import { ControllerFunction } from '../types.js'
+import { ControllerFunction, IBodyEmail, IUser } from '../types.js'
 import { getEnv } from '../helpers/getEnv.js'
 import { ctrlWrapper } from '../helpers/ctrlWrapper.js'
 import { HttpError } from '../helpers/HttpError.js'
+import { sendEmail } from '../helpers/sendEmail.js'
 import { User } from '../models/User.js'
 import dtnv from 'dotenv'
 dtnv.config()
 
 const { SECRET_KEY } = process.env
-//const { BASE_URL_FRONTEND } = getEnv()
+const { BASE_URL_FRONTEND } = getEnv()
 
 const register: ControllerFunction = async (req, res) => {
   //отримуємо дані з фронтенда
@@ -31,14 +32,25 @@ const register: ControllerFunction = async (req, res) => {
   const verificationToken = nanoid()
 
   // Створюємо нового користувача, та записуємо його в базу
-  const newUser = await User.create({
+  await User.create({
     ...req.body,
     password: hashedPassword,
     verificationToken,
     verify: false,
   })
-  //ставимо статус СТВОРЕНО з повідомленням
-  res.status(201).json({ message: 'User was created' })
+
+  // Об'єкт повідомлення
+  const bodyEmail: IBodyEmail = {
+    to: email,
+    subject: 'Verify Email',
+    html: `<a target="_blank" href="${BASE_URL_FRONTEND}/api/auth/verify/${verificationToken}">Click verify email</a>`,
+  }
+
+  //Відправка повідомлення
+  await sendEmail(bodyEmail)
+
+  // повідомляємо фронтенд, що лист дял верифікації відправлено на пошту.
+  res.status(201).json({ message: 'Email was sent successfully' })
 }
 
 const login: ControllerFunction = async (req, res) => {
@@ -46,7 +58,7 @@ const login: ControllerFunction = async (req, res) => {
   const { email, password } = req.body
 
   // шукаємо користувача в БД
-  const user = await User.findOne({ email })
+  const user: IUser | null = await User.findOne({ email })
   // Якщо користувач не знайдений помилка 401
   if (!user) {
     throw HttpError(401, 'Email or password is wrong')
@@ -91,11 +103,48 @@ const getCurrent: ControllerFunction = async (req, res) => {
   res.json({ token: req.body.user.token, user: req.body.user })
 }
 
+const verifyEmail: ControllerFunction = async (req, res) => {
+  const { verificationToken } = req.params
+  const user: IUser | null = await User.findOne({ verificationToken })
+
+  if (!user) {
+    HttpError(404, 'User not found')
+  }
+  if (user?.verificationToken) {
+    HttpError(404)
+  }
+
+  await User.findByIdAndUpdate(user?._id, {
+    verify: true,
+    verificationToken: '',
+  })
+  res.status(200).json({ message: 'Verification successful' })
+}
+
+const resendVerifyEmail: ControllerFunction = async (req, res) => {
+  const { email } = req.body
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw HttpError(404, 'User not found')
+  } else if (user.verify) {
+    throw HttpError(401, 'Verification has already been passed')
+  }
+  const bodyEmail: IBodyEmail = {
+    to: email,
+    subject: 'Verify Email',
+    html: `<a target="_blank" href="${BASE_URL_FRONTEND}/afterverify/${user.verificationToken}">Click verify email</a>`,
+  }
+  await sendEmail(bodyEmail)
+  res.json({ message: 'Verify email send success' })
+}
+
 const ctrl = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
   getCurrent: ctrlWrapper(getCurrent),
+  verifyEmail: ctrlWrapper(verifyEmail),
+  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
 }
 
 export default ctrl
