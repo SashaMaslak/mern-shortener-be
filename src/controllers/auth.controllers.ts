@@ -138,6 +138,14 @@ const resendVerifyEmail: ControllerFunction = async (req, res) => {
   res.json({ message: 'Verify email send success' })
 }
 
+const updateUser: ControllerFunction = async (req, res) => {
+  const { _id } = req.body
+  const user = await User.findByIdAndUpdate(_id, req.body, {
+    new: true,
+  })
+  res.json({ user })
+}
+
 const ctrl = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
@@ -145,6 +153,7 @@ const ctrl = {
   getCurrent: ctrlWrapper(getCurrent),
   verifyEmail: ctrlWrapper(verifyEmail),
   resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
+  updateUser: ctrlWrapper(updateUser),
 }
 
 export default ctrl

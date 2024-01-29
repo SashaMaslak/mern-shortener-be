@@ -23,3 +23,6 @@ authRouter.get('/verify/:verificationToken', ctrl.verifyEmail)
 
 // /users/verify
 authRouter.post('/verify', joiValidateBody(joiSchemas.emailSchema), ctrl.resendVerifyEmail)
+
+// /users/verify
+authRouter.put('/', isAuth, joiValidateBody(joiSchemas.updateSchema), ctrl.updateUser)
