@@ -26,3 +26,6 @@ authRouter.post('/verify', joiValidateBody(joiSchemas.emailSchema), ctrl.resendV
 
 // /users/
 authRouter.put('/', isAuth, joiValidateBody(joiSchemas.updateSchema), ctrl.updateUser)
+
+// /users/avatar
+authRouter.put('/avatar', isAuth, uploadFile.single('avatar'), ctrl.updateAvatar)

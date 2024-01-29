@@ -9,5 +9,6 @@ const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 const pswRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,16})/
 
 const phoneRegex = /^\+\d{11,12}$/
+const imageFileLimit = 3 * 1024 * 1024
 
-export const regex = { dateRegex, onlyLettersRegex, cityRegex, emailRegex, pswRegex, phoneRegex }
+export const regex = { dateRegex, onlyLettersRegex, cityRegex, emailRegex, pswRegex, phoneRegex, imageFileLimit }
